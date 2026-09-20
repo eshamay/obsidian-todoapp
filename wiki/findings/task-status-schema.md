@@ -8,11 +8,19 @@ sources:
   - id: work-organizer-research-status-data-model
     hash: 1ed4557d2396
     ingested: 2026-09-19
+  - id: work-organizer-status-data-model-recommendation
+    hash: 06873b78382a
+    ingested: 2026-09-19
 aliases: [task-status-schema, status-data-model-recommendation]
 tags: [finding, task-data-model, status-modeling, schema, entity-model]
 ---
 
 A concrete, field-level task-status schema assembled by the sibling `work-organizer` wiki's own four-part research thread ([[concepts/task-status-modeling]]), pulled in here as prior art for `todoapp-blocks-plugin`'s own entity-model work — **not yet adopted by this project**, this page records the external recommendation, not a decision made here.
+
+> [!NOTE]
+> This page merges two source pulls that cover the identical schema: the `sources/` capstone memo ([[sources/research-status-data-model]]) and the original wiki's own `findings/` recommendation page it was assembled into (`work-organizer/wiki/findings/status-data-model-recommendation.md`, pulled as `raw/work-organizer--status-data-model-recommendation.md`). No separate page was created for the second pull — it corroborates rather than adds new schema content, beyond the terminal-state note below.
+
+One refinement the original project's own audit applied on top of this schema: the primary `status` enum's terminal state should be `done` **and** `cancelled` as two distinct values (not one generic "closed"), matching how a `Project`-level entity in that project already distinguished the two — worth carrying forward if this project's own status enum gets a terminal state at all.
 
 ## The schema
 

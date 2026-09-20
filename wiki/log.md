@@ -90,3 +90,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: Capstone of the status-research thread; created this wiki's first `findings/` page for the concrete field-level schema, the single most directly reusable artifact of the whole pull, explicitly marked as external prior art not yet adopted by this project.
+
+## [2026-09-19] ingest | Status data-model recommendation (pulled from work-organizer wiki, findings/)
+- source: (merged into [[findings/task-status-schema]] — no new source page created)
+- raw: `raw/work-organizer--status-data-model-recommendation.md` (sha256: 06873b78382a)
+- pages touched: [[findings/task-status-schema]]
+- new pages: (none)
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: This pull is the original wiki's own `findings/` write-up of the exact same schema already captured via [[sources/research-status-data-model]] (seq 8) — near-total content overlap. Rather than create a duplicate page, added it as a corroborating source citation on [[findings/task-status-schema]] and pulled forward its one genuinely new refinement (terminal `done`/`cancelled` distinction) not already recorded.
