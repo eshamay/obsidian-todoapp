@@ -716,6 +716,24 @@
   height: min(85vh, 800px);
 }
 
+.todoapp-date-modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-normal);
+  margin-bottom: 10px;
+}
+
+.todoapp-date-modal-input {
+  width: 100%;
+  min-height: 30px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
 
 /* counters-branding-v9 */
 .todoapp-count,

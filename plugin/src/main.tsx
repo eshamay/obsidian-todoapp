@@ -14,6 +14,7 @@ import { render } from "preact";
 type Priority = 1 | 2 | 3 | 4;
 type TimeFilter = "today" | "tomorrow" | "week" | "all";
 type InlineField = "project" | "due" | "priority" | null;
+type DueOption = "today" | "tomorrow" | "nextweek" | "custom";
 
 type Project = {
   id: string;
@@ -77,6 +78,14 @@ function addDaysIso(days: number) {
 
 function tomorrowIso() {
   return addDaysIso(1);
+}
+
+function nextWeekMondayIso() {
+  const now = new Date();
+  const isoDow = now.getDay() === 0 ? 7 : now.getDay();
+  let days = (8 - isoDow) % 7;
+  if (days === 0) days = 7;
+  return addDaysIso(days);
 }
 
 function makeId() {
@@ -298,6 +307,43 @@ class TaskNoteModal extends Modal {
   }
 }
 
+class CustomDateModal extends Modal {
+  private input?: HTMLInputElement;
+
+  constructor(app: App, private initialDate: string, private onPick: (iso: string) => void) {
+    super(app);
+  }
+
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.addClass("todoapp-note-modal");
+    contentEl.createEl("div", { cls: "todoapp-date-modal-title", text: "Pick a date" });
+
+    this.input = contentEl.createEl("input", { cls: "todoapp-date-modal-input" }) as HTMLInputElement;
+    this.input.type = "date";
+    this.input.value = this.initialDate || todayIso();
+
+    const footer = contentEl.createDiv({ cls: "todoapp-note-modal-footer" });
+
+    const save = footer.createEl("button", { cls: "todoapp-note-modal-save", text: "Save" });
+    save.onclick = () => {
+      const value = this.input?.value;
+      this.close();
+      if (value) this.onPick(value);
+    };
+
+    const cancel = footer.createEl("button", { cls: "todoapp-note-modal-close", text: "Cancel" });
+    cancel.onclick = () => this.close();
+
+    setTimeout(() => this.input?.focus(), 50);
+  }
+
+  onClose() {
+    this.contentEl.empty();
+  }
+}
+
 class TodoStore {
   constructor(public app: App) {}
 
@@ -446,7 +492,8 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
 
   const [newTitle, setNewTitle] = useState("");
   const [newProjectId, setNewProjectId] = useState("inbox");
-  const [newDue, setNewDue] = useState("");
+  const [newDue, setNewDue] = useState(todayIso());
+  const [newDueOption, setNewDueOptionRaw] = useState<DueOption>("today");
   const [newPriority, setNewPriority] = useState<Priority>(4);
   const [newProjectName, setNewProjectName] = useState("");
 
@@ -457,8 +504,29 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
   function setTimeFilter(next: TimeFilter) {
     setTimeFilterRaw(next);
 
+    if (next === "today") {
+      setNewDue(todayIso());
+      setNewDueOptionRaw("today");
+    }
+    if (next === "tomorrow") {
+      setNewDue(tomorrowIso());
+      setNewDueOptionRaw("tomorrow");
+    }
+  }
+
+  function setNewDueOption(next: DueOption) {
+    if (next === "custom") {
+      new CustomDateModal(store.app, newDue || todayIso(), (iso) => {
+        setNewDue(iso);
+        setNewDueOptionRaw("custom");
+      }).open();
+      return;
+    }
+
+    setNewDueOptionRaw(next);
     if (next === "today") setNewDue(todayIso());
     if (next === "tomorrow") setNewDue(tomorrowIso());
+    if (next === "nextweek") setNewDue(nextWeekMondayIso());
   }
 
   function setProjectFilter(next: string) {
@@ -527,6 +595,8 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
 
     await update({ ...data, tasks: [task, ...data.tasks] });
     setNewTitle("");
+    setNewDue(todayIso());
+    setNewDueOptionRaw("today");
   }
 
   async function patchTask(taskId: string, patch: Partial<Task>) {
@@ -921,7 +991,17 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
           ))}
         </select>
 
-        <input type="date" value={newDue} onChange={(e) => setNewDue(eventValue(e))} />
+        <select
+          className="todoapp-add-due"
+          title={newDueOption === "custom" ? `Custom date: ${dateLabel(newDue)}` : undefined}
+          value={newDueOption}
+          onChange={(e) => setNewDueOption(eventValue(e) as DueOption)}
+        >
+          <option value="today">Today</option>
+          <option value="tomorrow">Tomorrow</option>
+          <option value="nextweek">Next Week</option>
+          <option value="custom">{newDueOption === "custom" ? dateLabel(newDue) : "Custom"}</option>
+        </select>
 
         <select value={newPriority} onChange={(e) => setNewPriority(Number(eventValue(e)) as Priority)}>
           <option value={1}>P1</option>
