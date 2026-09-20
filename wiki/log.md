@@ -40,3 +40,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: Corroborates [[concepts/obsidian-extension-mechanisms]]'s Plugin-API-for-full-custom-UI claim from a different angle (a real project's own decision reasoning) — merged as an additional source on that concept page rather than a disconnected new one, since the actual reusable content overlaps with [[sources/research-local-markdown-apps]].
+
+## [2026-09-19] ingest | Task status: flat-enum vs. state-machine vs. status-plus-flags (pulled from work-organizer wiki)
+- source: [[sources/research-status-state-machine]]
+- raw: `raw/work-organizer--research-status-state-machine.md` (sha256: cf778f274a36)
+- pages touched: [[index]]
+- new pages: [[sources/research-status-state-machine]], [[concepts/task-status-modeling]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: First of the status-research thread pulled from work-organizer; establishes the shared [[concepts/task-status-modeling]] page that subsequent status-research sources in this thread will accumulate onto, rather than each creating a disconnected concept page. Directly relevant prior art since `todoapp-blocks-plugin`'s own Task type is currently a flat `completed: boolean`.
