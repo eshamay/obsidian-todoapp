@@ -20,3 +20,13 @@
 - fact conflicts: 0
 - gaps drafted: 1 (gap-001: embedded-editor technique unverified on Obsidian mobile)
 - rationale: First ingest into a brand-new wiki, so this source establishes the initial page-type/wikilink pattern rather than merging into existing pages. Captured this session's own hands-on Obsidian-API research (the WorkspaceLeaf/MarkdownView embedding technique used to fix `TaskNoteModal`) as durable prior art before it would otherwise only live in chat history — split into a foundational API-model concept, a reusable risk-management pattern concept, and a worked-code example, per the wiki's concepts/examples taxonomy.
+
+## [2026-09-19] ingest | Local-first, markdown-native personal knowledge app architectures (pulled from work-organizer wiki)
+- source: [[sources/research-local-markdown-apps]]
+- raw: `raw/work-organizer--research-local-markdown-apps.md` (sha256: 5c42382169b0)
+- pages touched: [[index]]
+- new pages: [[sources/research-local-markdown-apps]], [[concepts/obsidian-extension-mechanisms]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Pulled from the sibling work-organizer wiki (per user request) for its Obsidian-ecosystem content only — the original's own build-architecture recommendation (standalone backend over Obsidian plugin) was for a different project and is explicitly not adopted here. Extracted the reusable comparison (Plugin API vs. Local REST API vs. Dataview vs. Bases) into a new concept page distinct from this wiki's own [[concepts/workspace-leaf-view-model]].
