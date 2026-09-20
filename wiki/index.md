@@ -6,6 +6,8 @@
 - [[concepts/undocumented-api-fallback-pattern]] — feature-probe + isolate-the-undocumented-access + try/catch + clean-fallback pattern for any plugin technique that leans on non-public host API surface.
 - [[concepts/obsidian-extension-mechanisms]] — four ways to extend/query a vault (Plugin API, Local REST API, Dataview, Bases) and why Plugin API is the only one giving full custom UI control.
 - [[concepts/task-status-modeling]] — status-plus-orthogonal-flags: one status enum + independent blocked/followup flags, vs. flat-enum or full-state-machine alternatives.
+- [[concepts/obsidian-vault-file-io]] — Vault's high-level file methods vs. raw `adapter` access; flags that this project's own note-file I/O currently bypasses the higher-level API.
+- [[concepts/obsidian-ui-building-blocks]] — Modal/Setting/Commands/PluginSettingTab, the core UI-construction API surface; notes this project's settings.ts is still an empty stub.
 
 ## Sources
 
@@ -18,6 +20,7 @@
 - [[sources/research-status-markdown-history]] — frontmatter-current-state + linked-event-note-history + git-backstop, three-layer approach to recording status transitions in markdown-native storage.
 - [[sources/research-status-data-model]] — capstone synthesis of the four-part status-research thread into one concrete seven-field schema; pulled from the work-organizer wiki.
 - [[sources/entity-data-model]] — a unified todo/followup/blocker `Item` entity model, pulled from the work-organizer wiki.
+- [[sources/web-obsidian-plugin-api-overview]] — official docs.obsidian.md coverage of Plugin lifecycle, Workspace/Vault/Editor, Modal/Setting, Commands, PluginSettingTab, mobile compatibility, and versioning.
 
 ## Comparisons
 

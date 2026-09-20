@@ -110,3 +110,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: Last of the 9 work-organizer pulls, and the most directly applicable to this project's entity-model workstream — genuinely new content (not overlapping the status-research thread beyond `status`/`status_category`), so it earned its own source page and this wiki's first `comparisons/` page, field-by-field against the project's current `Task` type. Confirms [[concepts/task-status-modeling]]'s "blocked is a relation" principle with `Item`'s concrete `blocked_by[]` array field.
+
+## [2026-09-19] ingest | Official Obsidian Plugin API overview (docs.obsidian.md)
+- source: [[sources/web-obsidian-plugin-api-overview]]
+- raw: `raw/web-obsidian-plugin-api-overview.md` (sha256: 85e25066b12f)
+- pages touched: [[index]], [[concepts/workspace-leaf-view-model]]
+- new pages: [[sources/web-obsidian-plugin-api-overview]], [[concepts/obsidian-vault-file-io]], [[concepts/obsidian-ui-building-blocks]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: First of the web-research fan-out (official docs.obsidian.md). Corroborates [[concepts/workspace-leaf-view-model]]'s embedding technique against the officially documented Workspace surface. Surfaces one concrete finding for this project's own code: `TaskNoteModal`/`TodoStore` uses raw `vault.adapter` I/O instead of the higher-level `Vault` methods (`read`/`process`) — recorded on [[concepts/obsidian-vault-file-io]], not acted on. Also covers Commands/PluginSettingTab, relevant to this project's currently-stubbed `settings.ts`.
