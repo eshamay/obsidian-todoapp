@@ -30,3 +30,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: Pulled from the sibling work-organizer wiki (per user request) for its Obsidian-ecosystem content only — the original's own build-architecture recommendation (standalone backend over Obsidian plugin) was for a different project and is explicitly not adopted here. Extracted the reusable comparison (Plugin API vs. Local REST API vs. Dataview vs. Bases) into a new concept page distinct from this wiki's own [[concepts/workspace-leaf-view-model]].
+
+## [2026-09-19] ingest | Local backend vs. Obsidian plugin — architecture decision (pulled from work-organizer wiki)
+- source: [[sources/local-backend-vs-obsidian-plugin]]
+- raw: `raw/work-organizer--local-backend-vs-obsidian-plugin.md` (sha256: 6faa3913fe18)
+- pages touched: [[index]], [[concepts/obsidian-extension-mechanisms]]
+- new pages: [[sources/local-backend-vs-obsidian-plugin]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Corroborates [[concepts/obsidian-extension-mechanisms]]'s Plugin-API-for-full-custom-UI claim from a different angle (a real project's own decision reasoning) — merged as an additional source on that concept page rather than a disconnected new one, since the actual reusable content overlaps with [[sources/research-local-markdown-apps]].

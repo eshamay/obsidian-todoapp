@@ -8,6 +8,9 @@ sources:
   - id: work-organizer-research-local-markdown-apps
     hash: 5c42382169b0
     ingested: 2026-09-19
+  - id: work-organizer-local-backend-vs-obsidian-plugin
+    hash: 6faa3913fe18
+    ingested: 2026-09-19
 aliases: [obsidian-extension-points, local-rest-api-vs-plugin-api]
 tags: [concept, obsidian-ecosystem, plugin-api, local-rest-api, dataview, bases]
 ---
@@ -21,4 +24,4 @@ Four distinct ways to build custom behavior on top of an Obsidian vault, not mut
 
 For a plugin like this one that wants custom interactive UI (task lists, modals, inline editing) rather than just queryable views, option 1 (Plugin API) is the only mechanism that gives full UI control — options 3–4 render views but don't provide arbitrary custom interaction, and option 2 requires a separate always-on process and a UI built outside Obsidian entirely.
 
-Source: [[sources/research-local-markdown-apps]] (external prior art, pulled from a different project's own build-architecture survey — that survey's conclusion favored a standalone backend for *their* use case, not adopted here).
+Sources: [[sources/research-local-markdown-apps]] and [[sources/local-backend-vs-obsidian-plugin]] (external prior art, pulled from a different project's own build-architecture survey/decision — that project's own conclusions, both the standalone-backend recommendation and the Phase-1-plugin decision, are for *their* use case; only the mechanism comparison carries over here).
