@@ -60,3 +60,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: Second of the status-research thread; merged onto [[concepts/task-status-modeling]] as corroborating real-world precedent rather than a disconnected page, per the pattern established on ingest seq 4.
+
+## [2026-09-19] ingest | Extensible status taxonomies: frozen category + open sub-status (pulled from work-organizer wiki)
+- source: [[sources/research-status-extensible-taxonomies]]
+- raw: `raw/work-organizer--research-status-extensible-taxonomies.md` (sha256: eee62f1f71de)
+- pages touched: [[index]], [[concepts/task-status-modeling]]
+- new pages: [[sources/research-status-extensible-taxonomies]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Third of the status-research thread; adds the extensibility answer to [[concepts/task-status-modeling]] — how to add new status values later without a breaking migration of this project's own plain-JSON data files.

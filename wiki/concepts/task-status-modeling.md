@@ -11,6 +11,9 @@ sources:
   - id: work-organizer-research-status-mainstream-tools
     hash: 25bdefb8e427
     ingested: 2026-09-19
+  - id: work-organizer-research-status-extensible-taxonomies
+    hash: eee62f1f71de
+    ingested: 2026-09-19
 aliases: [status-modeling, orthogonal-flags-status]
 tags: [concept, task-data-model, status-modeling, entity-model]
 ---
@@ -21,4 +24,6 @@ Grounded in statechart "orthogonal region" theory (independent concurrent state 
 
 Directly relevant prior art for `todoapp-blocks-plugin`'s own task entity model (currently a flat `completed: boolean` — `plugin/src/main.tsx` `Task` type), pulled in via the sibling `work-organizer` wiki's own status-modeling research thread rather than derived fresh here.
 
-Sources: [[sources/research-status-state-machine]], [[sources/research-status-mainstream-tools]] (external prior art). See also the capstone concrete schema at [[sources/research-status-data-model]] once ingested.
+**Extensibility:** if a status enum is added, [[sources/research-status-extensible-taxonomies]] recommends a frozen top-level category layer (small, never-extended) over an open additive sub-status string, plus an `unknown` sentinel and free-form tags as a pressure valve — so new status values can be added later without a breaking migration of this project's plain-JSON data files (`.todoapp/<id>.json`).
+
+Sources: [[sources/research-status-state-machine]], [[sources/research-status-mainstream-tools]], [[sources/research-status-extensible-taxonomies]] (external prior art). See also the capstone concrete schema at [[sources/research-status-data-model]] once ingested.
