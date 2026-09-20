@@ -50,3 +50,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: First of the status-research thread pulled from work-organizer; establishes the shared [[concepts/task-status-modeling]] page that subsequent status-research sources in this thread will accumulate onto, rather than each creating a disconnected concept page. Directly relevant prior art since `todoapp-blocks-plugin`'s own Task type is currently a flat `completed: boolean`.
+
+## [2026-09-19] ingest | How Jira, Linear, GitHub, Trello model task status (pulled from work-organizer wiki)
+- source: [[sources/research-status-mainstream-tools]]
+- raw: `raw/work-organizer--research-status-mainstream-tools.md` (sha256: 25bdefb8e427)
+- pages touched: [[index]], [[concepts/task-status-modeling]]
+- new pages: [[sources/research-status-mainstream-tools]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Second of the status-research thread; merged onto [[concepts/task-status-modeling]] as corroborating real-world precedent rather than a disconnected page, per the pattern established on ingest seq 4.

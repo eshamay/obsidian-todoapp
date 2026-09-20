@@ -13,6 +13,7 @@
 - [[sources/research-local-markdown-apps]] — Obsidian-ecosystem survey (Local REST API, Dataview, Bases) pulled from the work-organizer wiki.
 - [[sources/local-backend-vs-obsidian-plugin]] — a different project's decision to build directly against the Plugin API (Phase 1) vs. a standalone backend (contingent Phase 2), pulled from the work-organizer wiki; corroborates Plugin API as the only full-custom-UI mechanism.
 - [[sources/research-status-state-machine]] — evaluates flat-enum vs. state-machine vs. status-plus-flags for task status; recommends the hybrid, pulled from the work-organizer wiki.
+- [[sources/research-status-mainstream-tools]] — surveys Jira/Linear/GitHub/Trello status modeling; all three richer tools keep "blocked" off the status field, corroborating the hybrid.
 
 ## Comparisons
 
