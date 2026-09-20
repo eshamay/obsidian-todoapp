@@ -8,6 +8,9 @@ sources:
   - id: obsidian-embedded-editor-research
     hash: 4659e92f37c8
     ingested: 2026-09-19
+  - id: web-codemirror6-and-obsidian-editor-extensions
+    hash: ec051c66a590
+    ingested: 2026-09-19
 aliases: [feature-probe-fallback, graceful-degradation-undocumented-api]
 tags: [concept, obsidian-api, plugin-dev, risk-management, fallback]
 ---
@@ -22,3 +25,5 @@ Pattern, as applied to the [[workspace-leaf-view-model|WorkspaceLeaf embedding t
 4. **The fallback must be the previously-working behavior**, not a crash and not a half-broken UI. In the concrete case this pattern was extracted from, the fallback was reverting to a plain `<textarea>` — strictly worse UX than the embedded editor, but never worse than what existed before the enhancement was added.
 
 This is a general risk-management pattern for any plugin/integration code that reaches past a host's officially documented surface for genuine functional gain — not specific to Obsidian, though [[sources/obsidian-embedded-editor-research]] is where it was first captured in this wiki.
+
+**Worth noting when this pattern is unnecessary:** not every "customize the editor" goal requires it. [[codemirror6-and-editor-extensions]] documents `Plugin.registerEditorExtension` — a fully public, documented Obsidian API for adding custom CM6 decorations/state/widgets to the live-preview editor, no undocumented internals involved. The `WorkspaceLeaf` embedding technique needed this pattern because it does something genuinely off the documented surface (reusing a real `MarkdownView` inside a `Modal`); a plugin that just wants to render custom syntax inside the normal editor doesn't need it at all.

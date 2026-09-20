@@ -140,3 +140,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: Third of the web-research fan-out, and this wiki's second `comparisons/` page — fills the "consumer todo app" gap the work-organizer pull didn't cover (that pull only had project-management tools and one custom entity model). Surfaces the scheduled-vs-deadline split (corroborated independently by Todoist and Things) and universal tagging as the starkest gaps in this project's current `Task` type. Cross-linked the `completed`/`cancelled` two-boolean split (Things) onto [[findings/task-status-schema]] as independent corroboration of that schema's own terminal-state refinement.
+
+## [2026-09-19] ingest | CodeMirror 6 architecture and Obsidian's editor-extension API (web research)
+- source: [[sources/web-codemirror6-and-obsidian-editor-extensions]]
+- raw: `raw/web-codemirror6-and-obsidian-editor-extensions.md` (sha256: ec051c66a590)
+- pages touched: [[index]], [[concepts/undocumented-api-fallback-pattern]]
+- new pages: [[sources/web-codemirror6-and-obsidian-editor-extensions]], [[concepts/codemirror6-and-editor-extensions]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Fourth and last of the web-research fan-out. Documents Obsidian's public `registerEditorExtension` API as a fully-supported alternative path for editor customization, distinct from the undocumented-internals `WorkspaceLeaf` embedding technique this project's own `TaskNoteModal` already uses — cross-linked onto [[concepts/undocumented-api-fallback-pattern]] to make the risk-profile contrast explicit. Not currently used by this project; relevant if the UI/UX workstream wants in-editor task-metadata rendering later. This completes the planned bootstrap + ingest + web-research-fan-out work (14 total ingests).
