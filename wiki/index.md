@@ -15,6 +15,7 @@
 - [[sources/research-status-state-machine]] — evaluates flat-enum vs. state-machine vs. status-plus-flags for task status; recommends the hybrid, pulled from the work-organizer wiki.
 - [[sources/research-status-mainstream-tools]] — surveys Jira/Linear/GitHub/Trello status modeling; all three richer tools keep "blocked" off the status field, corroborating the hybrid.
 - [[sources/research-status-extensible-taxonomies]] — frozen status-category layer + open additive sub-status + `unknown` fallback + tags, for forward-compatible status enums; drawn from API-design guidance (Azure/AIP-126/Zalando/Protobuf).
+- [[sources/research-status-markdown-history]] — frontmatter-current-state + linked-event-note-history + git-backstop, three-layer approach to recording status transitions in markdown-native storage.
 
 ## Comparisons
 

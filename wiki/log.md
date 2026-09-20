@@ -70,3 +70,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: Third of the status-research thread; adds the extensibility answer to [[concepts/task-status-modeling]] — how to add new status values later without a breaking migration of this project's own plain-JSON data files.
+
+## [2026-09-19] ingest | Recording status-transition history in markdown-native storage (pulled from work-organizer wiki)
+- source: [[sources/research-status-markdown-history]]
+- raw: `raw/work-organizer--research-status-markdown-history.md` (sha256: 14f3c7685324)
+- pages touched: [[index]], [[concepts/task-status-modeling]]
+- new pages: [[sources/research-status-markdown-history]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Fourth of the status-research thread; adds the "how are transitions recorded" answer to [[concepts/task-status-modeling]], with a caveat that this project's vault may not be a git repo (unlike the wiki's own parent repo), so the git-backstop layer needs re-evaluation if adopted.

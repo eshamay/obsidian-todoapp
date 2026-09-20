@@ -14,6 +14,9 @@ sources:
   - id: work-organizer-research-status-extensible-taxonomies
     hash: eee62f1f71de
     ingested: 2026-09-19
+  - id: work-organizer-research-status-markdown-history
+    hash: 14f3c7685324
+    ingested: 2026-09-19
 aliases: [status-modeling, orthogonal-flags-status]
 tags: [concept, task-data-model, status-modeling, entity-model]
 ---
@@ -26,4 +29,6 @@ Directly relevant prior art for `todoapp-blocks-plugin`'s own task entity model 
 
 **Extensibility:** if a status enum is added, [[sources/research-status-extensible-taxonomies]] recommends a frozen top-level category layer (small, never-extended) over an open additive sub-status string, plus an `unknown` sentinel and free-form tags as a pressure valve — so new status values can be added later without a breaking migration of this project's plain-JSON data files (`.todoapp/<id>.json`).
 
-Sources: [[sources/research-status-state-machine]], [[sources/research-status-mainstream-tools]], [[sources/research-status-extensible-taxonomies]] (external prior art). See also the capstone concrete schema at [[sources/research-status-data-model]] once ingested.
+**Transition history:** [[sources/research-status-markdown-history]] recommends layering three mechanisms — frontmatter for current state only, a linked event note per transition as the live queryable history, git commit history as the tamper-evident backstop. Note this project's vault is not necessarily a git repo (unlike this wiki's own parent repo), so the git-backstop layer may not carry over unchanged.
+
+Sources: [[sources/research-status-state-machine]], [[sources/research-status-mainstream-tools]], [[sources/research-status-extensible-taxonomies]], [[sources/research-status-markdown-history]] (external prior art). See also the capstone concrete schema at [[sources/research-status-data-model]] once ingested.
