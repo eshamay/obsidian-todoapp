@@ -8,6 +8,7 @@
 - [[concepts/task-status-modeling]] — status-plus-orthogonal-flags: one status enum + independent blocked/followup flags, vs. flat-enum or full-state-machine alternatives.
 - [[concepts/obsidian-vault-file-io]] — Vault's high-level file methods vs. raw `adapter` access; flags that this project's own note-file I/O currently bypasses the higher-level API.
 - [[concepts/obsidian-ui-building-blocks]] — Modal/Setting/Commands/PluginSettingTab, the core UI-construction API surface; notes this project's settings.ts is still an empty stub.
+- [[concepts/obsidian-plugin-guidelines-checklist]] — official community-plugin code-quality guidelines (innerHTML avoidance, Editor/Vault.process/FileManager.processFrontMatter preferences, UI text case, hotkey conventions).
 
 ## Sources
 
@@ -21,6 +22,7 @@
 - [[sources/research-status-data-model]] — capstone synthesis of the four-part status-research thread into one concrete seven-field schema; pulled from the work-organizer wiki.
 - [[sources/entity-data-model]] — a unified todo/followup/blocker `Item` entity model, pulled from the work-organizer wiki.
 - [[sources/web-obsidian-plugin-api-overview]] — official docs.obsidian.md coverage of Plugin lifecycle, Workspace/Vault/Editor, Modal/Setting, Commands, PluginSettingTab, mobile compatibility, and versioning.
+- [[sources/web-obsidian-dev-tooling-and-release-process]] — obsidian-api typings, obsidian-sample-plugin scaffold (matches this project's own build files), esbuild pipeline, community submission process (not applicable to this project), and plugin guidelines.
 
 ## Comparisons
 

@@ -120,3 +120,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: First of the web-research fan-out (official docs.obsidian.md). Corroborates [[concepts/workspace-leaf-view-model]]'s embedding technique against the officially documented Workspace surface. Surfaces one concrete finding for this project's own code: `TaskNoteModal`/`TodoStore` uses raw `vault.adapter` I/O instead of the higher-level `Vault` methods (`read`/`process`) — recorded on [[concepts/obsidian-vault-file-io]], not acted on. Also covers Commands/PluginSettingTab, relevant to this project's currently-stubbed `settings.ts`.
+
+## [2026-09-19] ingest | Obsidian plugin developer tooling and community-release process (web research)
+- source: [[sources/web-obsidian-dev-tooling-and-release-process]]
+- raw: `raw/web-obsidian-dev-tooling-and-release-process.md` (sha256: 2ee40b4c74b6)
+- pages touched: [[index]], [[concepts/obsidian-vault-file-io]]
+- new pages: [[sources/web-obsidian-dev-tooling-and-release-process]], [[concepts/obsidian-plugin-guidelines-checklist]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Second of the web-research fan-out. Confirms this project's own `version-bump.mjs`/`esbuild.config.mjs` (inherited via the upstream fork) already match the canonical sample-plugin scaffold. Surfaces a second concrete finding for this project's own code — `FileManager.processFrontMatter()` is the documented API for frontmatter edits, vs. this project's hand-rolled template/regex approach in `makeNoteFileContent()`/`stripTodoAppNoteMeta()` — merged onto [[concepts/obsidian-vault-file-io]] alongside the prior `vault.adapter` finding. Community-submission-process content noted as not applicable to this project (no PR/listing planned).
