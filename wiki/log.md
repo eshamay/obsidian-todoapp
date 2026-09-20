@@ -80,3 +80,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: Fourth of the status-research thread; adds the "how are transitions recorded" answer to [[concepts/task-status-modeling]], with a caveat that this project's vault may not be a git repo (unlike the wiki's own parent repo), so the git-backstop layer needs re-evaluation if adopted.
+
+## [2026-09-19] ingest | Capstone: a concrete seven-field task-status schema (pulled from work-organizer wiki)
+- source: [[sources/research-status-data-model]]
+- raw: `raw/work-organizer--research-status-data-model.md` (sha256: 1ed4557d2396)
+- pages touched: [[index]], [[concepts/task-status-modeling]]
+- new pages: [[sources/research-status-data-model]], [[findings/task-status-schema]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Capstone of the status-research thread; created this wiki's first `findings/` page for the concrete field-level schema, the single most directly reusable artifact of the whole pull, explicitly marked as external prior art not yet adopted by this project.

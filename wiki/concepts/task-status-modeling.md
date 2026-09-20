@@ -17,6 +17,9 @@ sources:
   - id: work-organizer-research-status-markdown-history
     hash: 14f3c7685324
     ingested: 2026-09-19
+  - id: work-organizer-research-status-data-model
+    hash: 1ed4557d2396
+    ingested: 2026-09-19
 aliases: [status-modeling, orthogonal-flags-status]
 tags: [concept, task-data-model, status-modeling, entity-model]
 ---
@@ -31,4 +34,6 @@ Directly relevant prior art for `todoapp-blocks-plugin`'s own task entity model 
 
 **Transition history:** [[sources/research-status-markdown-history]] recommends layering three mechanisms — frontmatter for current state only, a linked event note per transition as the live queryable history, git commit history as the tamper-evident backstop. Note this project's vault is not necessarily a git repo (unlike this wiki's own parent repo), so the git-backstop layer may not carry over unchanged.
 
-Sources: [[sources/research-status-state-machine]], [[sources/research-status-mainstream-tools]], [[sources/research-status-extensible-taxonomies]], [[sources/research-status-markdown-history]] (external prior art). See also the capstone concrete schema at [[sources/research-status-data-model]] once ingested.
+**Concrete schema:** [[findings/task-status-schema]] assembles all of the above into one field-level 7-field schema (`status`/`status_category`/`blocked`/`blocked_reason`/`needs_followup`/`followup_reason`/`status_changed`) — the single most directly reusable artifact of this research thread.
+
+Sources: [[sources/research-status-state-machine]], [[sources/research-status-mainstream-tools]], [[sources/research-status-extensible-taxonomies]], [[sources/research-status-markdown-history]], [[sources/research-status-data-model]] (external prior art).

@@ -16,6 +16,7 @@
 - [[sources/research-status-mainstream-tools]] — surveys Jira/Linear/GitHub/Trello status modeling; all three richer tools keep "blocked" off the status field, corroborating the hybrid.
 - [[sources/research-status-extensible-taxonomies]] — frozen status-category layer + open additive sub-status + `unknown` fallback + tags, for forward-compatible status enums; drawn from API-design guidance (Azure/AIP-126/Zalando/Protobuf).
 - [[sources/research-status-markdown-history]] — frontmatter-current-state + linked-event-note-history + git-backstop, three-layer approach to recording status transitions in markdown-native storage.
+- [[sources/research-status-data-model]] — capstone synthesis of the four-part status-research thread into one concrete seven-field schema; pulled from the work-organizer wiki.
 
 ## Comparisons
 
@@ -23,7 +24,7 @@
 
 ## Findings
 
-(none yet)
+- [[findings/task-status-schema]] — the reusable 7-field task-status schema (`status`/`status_category`/`blocked`/`blocked_reason`/`needs_followup`/`followup_reason`/`status_changed`), external prior art not yet adopted by this project.
 
 ## Examples
 
