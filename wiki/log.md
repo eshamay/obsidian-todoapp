@@ -130,3 +130,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: Second of the web-research fan-out. Confirms this project's own `version-bump.mjs`/`esbuild.config.mjs` (inherited via the upstream fork) already match the canonical sample-plugin scaffold. Surfaces a second concrete finding for this project's own code — `FileManager.processFrontMatter()` is the documented API for frontmatter edits, vs. this project's hand-rolled template/regex approach in `makeNoteFileContent()`/`stripTodoAppNoteMeta()` — merged onto [[concepts/obsidian-vault-file-io]] alongside the prior `vault.adapter` finding. Community-submission-process content noted as not applicable to this project (no PR/listing planned).
+
+## [2026-09-19] ingest | Mainstream consumer todo-app and Obsidian task-plugin data models (web research)
+- source: [[sources/web-mainstream-todo-app-data-models]]
+- raw: `raw/web-mainstream-todo-app-data-models.md` (sha256: a0a17111f4c8)
+- pages touched: [[index]], [[findings/task-status-schema]]
+- new pages: [[sources/web-mainstream-todo-app-data-models]], [[comparisons/task-type-vs-mainstream-todo-apps]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Third of the web-research fan-out, and this wiki's second `comparisons/` page — fills the "consumer todo app" gap the work-organizer pull didn't cover (that pull only had project-management tools and one custom entity model). Surfaces the scheduled-vs-deadline split (corroborated independently by Todoist and Things) and universal tagging as the starkest gaps in this project's current `Task` type. Cross-linked the `completed`/`cancelled` two-boolean split (Things) onto [[findings/task-status-schema]] as independent corroboration of that schema's own terminal-state refinement.

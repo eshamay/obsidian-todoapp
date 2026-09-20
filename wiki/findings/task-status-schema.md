@@ -22,7 +22,7 @@ A concrete, field-level task-status schema assembled by the sibling `work-organi
 
 One refinement the original project's own audit applied on top of this schema: the primary `status` enum's terminal state should be `done` **and** `cancelled` as two distinct values (not one generic "closed"), matching how a `Project`-level entity in that project already distinguished the two — worth carrying forward if this project's own status enum gets a terminal state at all.
 
-See [[comparisons/task-type-vs-item-entity]] for how this schema's fields line up against this project's current `Task` type field-by-field.
+See [[comparisons/task-type-vs-item-entity]] for how this schema's fields line up against this project's current `Task` type field-by-field. The `done`/`cancelled` terminal-state split is independently corroborated by [[comparisons/task-type-vs-mainstream-todo-apps]] — Things (Cultured Code) documents the identical two-boolean split (`completed`/`canceled`) in a real consumer product, not just the other project's own internal audit.
 
 ## The schema
 

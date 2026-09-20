@@ -23,10 +23,12 @@
 - [[sources/entity-data-model]] — a unified todo/followup/blocker `Item` entity model, pulled from the work-organizer wiki.
 - [[sources/web-obsidian-plugin-api-overview]] — official docs.obsidian.md coverage of Plugin lifecycle, Workspace/Vault/Editor, Modal/Setting, Commands, PluginSettingTab, mobile compatibility, and versioning.
 - [[sources/web-obsidian-dev-tooling-and-release-process]] — obsidian-api typings, obsidian-sample-plugin scaffold (matches this project's own build files), esbuild pipeline, community submission process (not applicable to this project), and plugin guidelines.
+- [[sources/web-mainstream-todo-app-data-models]] — Todoist API, Things URL scheme, Obsidian Tasks/Dataview/Kanban plugin data models; TickTick has no verifiable public schema.
 
 ## Comparisons
 
 - [[comparisons/task-type-vs-item-entity]] — this project's current `Task` type vs. `Item`'s field shape, field-by-field; surfaces blocking-as-relation and context-tagging as the starkest gaps.
+- [[comparisons/task-type-vs-mainstream-todo-apps]] — `Task` vs. Todoist/Things/Tasks-plugin/Dataview/Kanban; surfaces scheduled-vs-deadline split and universal tagging as the starkest gaps.
 
 ## Findings
 
