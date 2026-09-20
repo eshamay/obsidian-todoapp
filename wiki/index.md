@@ -17,10 +17,11 @@
 - [[sources/research-status-extensible-taxonomies]] — frozen status-category layer + open additive sub-status + `unknown` fallback + tags, for forward-compatible status enums; drawn from API-design guidance (Azure/AIP-126/Zalando/Protobuf).
 - [[sources/research-status-markdown-history]] — frontmatter-current-state + linked-event-note-history + git-backstop, three-layer approach to recording status transitions in markdown-native storage.
 - [[sources/research-status-data-model]] — capstone synthesis of the four-part status-research thread into one concrete seven-field schema; pulled from the work-organizer wiki.
+- [[sources/entity-data-model]] — a unified todo/followup/blocker `Item` entity model, pulled from the work-organizer wiki.
 
 ## Comparisons
 
-(none yet)
+- [[comparisons/task-type-vs-item-entity]] — this project's current `Task` type vs. `Item`'s field shape, field-by-field; surfaces blocking-as-relation and context-tagging as the starkest gaps.
 
 ## Findings
 

@@ -100,3 +100,13 @@
 - fact conflicts: 0
 - gaps drafted: 0
 - rationale: This pull is the original wiki's own `findings/` write-up of the exact same schema already captured via [[sources/research-status-data-model]] (seq 8) — near-total content overlap. Rather than create a duplicate page, added it as a corroborating source citation on [[findings/task-status-schema]] and pulled forward its one genuinely new refinement (terminal `done`/`cancelled` distinction) not already recorded.
+
+## [2026-09-19] ingest | A unified todo/followup/blocker Item entity model (pulled from work-organizer wiki)
+- source: [[sources/entity-data-model]]
+- raw: `raw/work-organizer--entity-data-model.md` (sha256: 8d63b7494a3c)
+- pages touched: [[index]], [[findings/task-status-schema]]
+- new pages: [[sources/entity-data-model]], [[comparisons/task-type-vs-item-entity]]
+- contradictions raised: 0
+- fact conflicts: 0
+- gaps drafted: 0
+- rationale: Last of the 9 work-organizer pulls, and the most directly applicable to this project's entity-model workstream — genuinely new content (not overlapping the status-research thread beyond `status`/`status_category`), so it earned its own source page and this wiki's first `comparisons/` page, field-by-field against the project's current `Task` type. Confirms [[concepts/task-status-modeling]]'s "blocked is a relation" principle with `Item`'s concrete `blocked_by[]` array field.
