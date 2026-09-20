@@ -163,8 +163,7 @@
 }
 
 .todoapp-add input,
-.todoapp-add select,
-.todoapp-add button {
+.todoapp-add select {
   min-height: 27px;
   font-size: 12px;
 }
@@ -179,7 +178,9 @@
   box-shadow: none;
 }
 
-.todoapp-add button {
+.todoapp-add-submit {
+  min-height: 27px;
+  font-size: 12px;
   border: 0;
   border-radius: 6px;
   background: #e44332;
@@ -342,7 +343,6 @@
 }
 
 .todoapp-inline-select,
-.todoapp-inline-date,
 .todoapp-inline-priority {
   max-width: 110px;
   min-height: 20px;
@@ -353,6 +353,167 @@
   padding: 1px 4px;
   font-size: 11px;
   box-shadow: none;
+}
+
+.todoapp-due-toggle {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+  box-shadow: none;
+}
+
+.todoapp-add-due,
+.todoapp-inline-due {
+  position: relative;
+  display: inline-block;
+}
+
+.todoapp-add-due .todoapp-due-toggle {
+  min-height: 27px;
+  width: 128px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  padding: 3px 7px;
+  font-size: 12px;
+  text-align: left;
+}
+
+.todoapp-inline-due .todoapp-due-toggle {
+  max-width: 110px;
+  min-height: 20px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 5px;
+  background: var(--background-primary);
+  padding: 1px 4px;
+  font-size: 11px;
+}
+
+.todoapp-due-panel {
+  position: fixed;
+  z-index: 50;
+  min-width: 232px;
+  max-height: min(400px, calc(100vh - 16px));
+  overflow-y: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  padding: 4px;
+}
+
+.todoapp-due-row {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  color: var(--text-normal);
+  cursor: pointer;
+}
+
+.todoapp-due-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.todoapp-due-custom-section {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.todoapp-due-custom-label {
+  padding: 2px 6px 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.todoapp-due-cal {
+  padding: 0 2px 2px;
+}
+
+.todoapp-due-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px 6px;
+}
+
+.todoapp-due-cal-nav {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.todoapp-due-cal-nav:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.todoapp-due-cal-month {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+.todoapp-due-cal-weekdays,
+.todoapp-due-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.todoapp-due-cal-weekday {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-faint);
+  padding-bottom: 2px;
+}
+
+.todoapp-due-cal-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  min-height: 28px;
+}
+
+.todoapp-due-cal-day {
+  border: 0;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-normal);
+}
+
+.todoapp-due-cal-day:hover {
+  background: var(--background-modifier-hover);
+}
+
+.todoapp-due-cal-day.is-today {
+  border: 1px solid var(--interactive-accent);
+}
+
+.todoapp-due-cal-day.is-selected {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.todoapp-due-cal-cell-blank {
+  pointer-events: none;
 }
 
 .todoapp-task-actions {
@@ -714,24 +875,6 @@
 .modal:has(.todoapp-note-modal-leaf-host) {
   width: min(90vw, 900px);
   height: min(85vh, 800px);
-}
-
-.todoapp-date-modal-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-normal);
-  margin-bottom: 10px;
-}
-
-.todoapp-date-modal-input {
-  width: 100%;
-  min-height: 30px;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 6px;
-  background: var(--background-primary);
-  color: var(--text-normal);
-  padding: 4px 8px;
-  font-size: 13px;
 }
 
 

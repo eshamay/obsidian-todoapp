@@ -8,13 +8,13 @@
 /* eslint-disable obsidianmd/prefer-window-timers */
 
 import { App, MarkdownView, Modal, Plugin, TFile, WorkspaceLeaf } from "obsidian";
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "preact/hooks";
 import { render } from "preact";
+import { createPortal } from "preact/compat";
 
 type Priority = 1 | 2 | 3 | 4;
 type TimeFilter = "today" | "tomorrow" | "week" | "all";
 type InlineField = "project" | "due" | "priority" | null;
-type DueOption = "today" | "tomorrow" | "nextweek" | "custom";
 
 type Project = {
   id: string;
@@ -124,7 +124,7 @@ function dateLabel(date?: string) {
   const d = parts[2];
 
   if (!y || !m || !d) return date;
-  return `${d}.${m}.${y}`;
+  return `${m}/${d}/${y}`;
 }
 
 function isOverdue(date?: string) {
@@ -307,41 +307,253 @@ class TaskNoteModal extends Modal {
   }
 }
 
-class CustomDateModal extends Modal {
-  private input?: HTMLInputElement;
+function dueKind(date?: string): "today" | "tomorrow" | "nextweek" | "custom" | "none" {
+  if (!date) return "none";
+  if (date === todayIso()) return "today";
+  if (date === tomorrowIso()) return "tomorrow";
+  if (date === nextWeekMondayIso()) return "nextweek";
+  return "custom";
+}
 
-  constructor(app: App, private initialDate: string, private onPick: (iso: string) => void) {
-    super(app);
+function dueKindLabel(date?: string): string {
+  const kind = dueKind(date);
+  if (kind === "today") return "Today";
+  if (kind === "tomorrow") return "Tomorrow";
+  if (kind === "nextweek") return "Next Week";
+  if (kind === "none") return "No date";
+  return dateLabel(date);
+}
+
+type ViewMonth = { year: number; month: number }; // month is 1-based
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+const WEEKDAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+
+function isoToParts(iso: string) {
+  const [year, month, day] = iso.split("-").map(Number) as [number, number, number];
+  return { year, month, day };
+}
+
+function partsToIso(year: number, month: number, day: number): string {
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function daysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
+}
+
+function firstWeekdayOfMonth(year: number, month: number): number {
+  return new Date(year, month - 1, 1).getDay();
+}
+
+function shiftViewMonth(view: ViewMonth, delta: number): ViewMonth {
+  let month = view.month + delta;
+  let year = view.year;
+  while (month > 12) { month -= 12; year += 1; }
+  while (month < 1) { month += 12; year -= 1; }
+  return { year, month };
+}
+
+function viewMonthLabel(view: ViewMonth): string {
+  return `${MONTH_NAMES[view.month - 1]} ${view.year}`;
+}
+
+function viewMonthFromIso(iso: string | undefined): ViewMonth {
+  const source = dueKind(iso) === "custom" && iso ? iso : todayIso();
+  const { year, month } = isoToParts(source);
+  return { year, month };
+}
+
+function calendarCells(view: ViewMonth): (number | null)[] {
+  const leading = firstWeekdayOfMonth(view.year, view.month);
+  const total = daysInMonth(view.year, view.month);
+  const cells: (number | null)[] = [];
+  for (let i = 0; i < leading; i++) cells.push(null);
+  for (let d = 1; d <= total; d++) cells.push(d);
+  return cells;
+}
+
+const DUE_PANEL_GAP = 3;
+const DUE_PANEL_VIEWPORT_MARGIN = 6;
+
+function computeDuePanelPosition(
+  anchorRect: { top: number; left: number; bottom: number; right: number },
+  panelSize: { width: number; height: number },
+  viewport: { width: number; height: number }
+): { top: number; left: number } {
+  const margin = DUE_PANEL_VIEWPORT_MARGIN;
+
+  let left = anchorRect.left;
+  const maxLeft = viewport.width - panelSize.width - margin;
+  if (left > maxLeft) left = maxLeft;
+  if (left < margin) left = margin;
+
+  let top = anchorRect.bottom + DUE_PANEL_GAP;
+  const fitsBelow = top + panelSize.height <= viewport.height - margin;
+  if (!fitsBelow) {
+    const topAbove = anchorRect.top - panelSize.height - DUE_PANEL_GAP;
+    top = topAbove >= margin ? topAbove : Math.max(margin, Math.min(top, viewport.height - panelSize.height - margin));
   }
 
-  onOpen() {
-    const { contentEl } = this;
-    contentEl.empty();
-    contentEl.addClass("todoapp-note-modal");
-    contentEl.createEl("div", { cls: "todoapp-date-modal-title", text: "Pick a date" });
+  return { top, left };
+}
 
-    this.input = contentEl.createEl("input", { cls: "todoapp-date-modal-input" }) as HTMLInputElement;
-    this.input.type = "date";
-    this.input.value = this.initialDate || todayIso();
+function DueDropdown(props: {
+  value: string | undefined;
+  onChange: (next: string | undefined) => void;
+  initialOpen?: boolean;
+  onCloseWithoutChange?: () => void;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(props.initialOpen ?? false);
+  const [viewMonth, setViewMonth] = useState<ViewMonth>(() => viewMonthFromIso(props.value));
+  const [panelPos, setPanelPos] = useState<{ top: number; left: number } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
-    const footer = contentEl.createDiv({ cls: "todoapp-note-modal-footer" });
+  useEffect(() => {
+    if (open) setViewMonth(viewMonthFromIso(props.value));
+  }, [open]);
 
-    const save = footer.createEl("button", { cls: "todoapp-note-modal-save", text: "Save" });
-    save.onclick = () => {
-      const value = this.input?.value;
-      this.close();
-      if (value) this.onPick(value);
+  useLayoutEffect(() => {
+    if (!open) {
+      setPanelPos(null);
+      return;
+    }
+    const anchorEl = containerRef.current;
+    const panelEl = panelRef.current;
+    if (!anchorEl || !panelEl) return;
+    const anchorRect = anchorEl.getBoundingClientRect();
+    const panelRect = panelEl.getBoundingClientRect();
+    setPanelPos(
+      computeDuePanelPosition(
+        anchorRect,
+        { width: panelRect.width, height: panelRect.height },
+        { width: window.innerWidth, height: window.innerHeight }
+      )
+    );
+  }, [open, viewMonth]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function reposition() {
+      const anchorEl = containerRef.current;
+      const panelEl = panelRef.current;
+      if (!anchorEl || !panelEl) return;
+      const anchorRect = anchorEl.getBoundingClientRect();
+      const panelRect = panelEl.getBoundingClientRect();
+      setPanelPos(
+        computeDuePanelPosition(
+          anchorRect,
+          { width: panelRect.width, height: panelRect.height },
+          { width: window.innerWidth, height: window.innerHeight }
+        )
+      );
+    }
+
+    function onDocMouseDown(e: MouseEvent) {
+      const target = e.target as Node;
+      const insideAnchor = !!containerRef.current?.contains(target);
+      const insidePanel = !!panelRef.current?.contains(target);
+      if (!insideAnchor && !insidePanel) {
+        setOpen(false);
+        props.onCloseWithoutChange?.();
+      }
+    }
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpen(false);
+        props.onCloseWithoutChange?.();
+      }
+    }
+
+    document.addEventListener("mousedown", onDocMouseDown);
+    document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("scroll", reposition, true);
+    window.addEventListener("resize", reposition);
+    return () => {
+      document.removeEventListener("mousedown", onDocMouseDown);
+      document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("scroll", reposition, true);
+      window.removeEventListener("resize", reposition);
     };
+  }, [open]);
 
-    const cancel = footer.createEl("button", { cls: "todoapp-note-modal-close", text: "Cancel" });
-    cancel.onclick = () => this.close();
-
-    setTimeout(() => this.input?.focus(), 50);
+  function pick(iso: string | undefined) {
+    props.onChange(iso);
+    setOpen(false);
   }
 
-  onClose() {
-    this.contentEl.empty();
-  }
+  function goPrevMonth() { setViewMonth((v) => shiftViewMonth(v, -1)); }
+  function goNextMonth() { setViewMonth((v) => shiftViewMonth(v, 1)); }
+
+  return (
+    <div className={props.className} ref={containerRef}>
+      <button type="button" className="todoapp-due-toggle" onClick={() => setOpen((o) => !o)}>
+        {dueKindLabel(props.value)}
+      </button>
+      {open && createPortal(
+        <div
+          ref={panelRef}
+          className="todoapp-due-panel"
+          style={
+            panelPos
+              ? { top: `${panelPos.top}px`, left: `${panelPos.left}px`, visibility: "visible" }
+              : { top: "0px", left: "0px", visibility: "hidden" }
+          }
+        >
+          <button type="button" className="todoapp-due-row" onClick={() => pick(todayIso())}>Today</button>
+          <button type="button" className="todoapp-due-row" onClick={() => pick(tomorrowIso())}>Tomorrow</button>
+          <button type="button" className="todoapp-due-row" onClick={() => pick(nextWeekMondayIso())}>Next Week</button>
+          <button type="button" className="todoapp-due-row" onClick={() => pick(undefined)}>No date</button>
+          <div className="todoapp-due-custom-section">
+            <div className="todoapp-due-custom-label">Custom</div>
+            <div className="todoapp-due-cal">
+              <div className="todoapp-due-cal-header">
+                <button type="button" className="todoapp-due-cal-nav" onClick={goPrevMonth} aria-label="Previous month">‹</button>
+                <span className="todoapp-due-cal-month">{viewMonthLabel(viewMonth)}</span>
+                <button type="button" className="todoapp-due-cal-nav" onClick={goNextMonth} aria-label="Next month">›</button>
+              </div>
+              <div className="todoapp-due-cal-weekdays">
+                {WEEKDAY_LABELS.map((w, i) => (
+                  <span key={`wd-${i}`} className="todoapp-due-cal-weekday">{w}</span>
+                ))}
+              </div>
+              <div className="todoapp-due-cal-grid">
+                {calendarCells(viewMonth).map((day, i) => {
+                  if (day === null) {
+                    return <span key={`blank-${i}`} className="todoapp-due-cal-cell todoapp-due-cal-cell-blank" />;
+                  }
+                  const iso = partsToIso(viewMonth.year, viewMonth.month, day);
+                  return (
+                    <button
+                      key={iso}
+                      type="button"
+                      className={[
+                        "todoapp-due-cal-cell",
+                        "todoapp-due-cal-day",
+                        iso === todayIso() ? "is-today" : "",
+                        iso === props.value ? "is-selected" : ""
+                      ].filter(Boolean).join(" ")}
+                      onClick={() => pick(iso)}
+                    >
+                      {day}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  );
 }
 
 class TodoStore {
@@ -493,7 +705,6 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
   const [newTitle, setNewTitle] = useState("");
   const [newProjectId, setNewProjectId] = useState("inbox");
   const [newDue, setNewDue] = useState(todayIso());
-  const [newDueOption, setNewDueOptionRaw] = useState<DueOption>("today");
   const [newPriority, setNewPriority] = useState<Priority>(4);
   const [newProjectName, setNewProjectName] = useState("");
 
@@ -504,29 +715,12 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
   function setTimeFilter(next: TimeFilter) {
     setTimeFilterRaw(next);
 
-    if (next === "today") {
-      setNewDue(todayIso());
-      setNewDueOptionRaw("today");
-    }
-    if (next === "tomorrow") {
-      setNewDue(tomorrowIso());
-      setNewDueOptionRaw("tomorrow");
-    }
-  }
-
-  function setNewDueOption(next: DueOption) {
-    if (next === "custom") {
-      new CustomDateModal(store.app, newDue || todayIso(), (iso) => {
-        setNewDue(iso);
-        setNewDueOptionRaw("custom");
-      }).open();
-      return;
-    }
-
-    setNewDueOptionRaw(next);
     if (next === "today") setNewDue(todayIso());
     if (next === "tomorrow") setNewDue(tomorrowIso());
-    if (next === "nextweek") setNewDue(nextWeekMondayIso());
+  }
+
+  function handleNewDueChange(iso: string | undefined) {
+    setNewDue(iso ?? "");
   }
 
   function setProjectFilter(next: string) {
@@ -596,7 +790,6 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
     await update({ ...data, tasks: [task, ...data.tasks] });
     setNewTitle("");
     setNewDue(todayIso());
-    setNewDueOptionRaw("today");
   }
 
   async function patchTask(taskId: string, patch: Partial<Task>) {
@@ -991,17 +1184,11 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
           ))}
         </select>
 
-        <select
+        <DueDropdown
           className="todoapp-add-due"
-          title={newDueOption === "custom" ? `Custom date: ${dateLabel(newDue)}` : undefined}
-          value={newDueOption}
-          onChange={(e) => setNewDueOption(eventValue(e) as DueOption)}
-        >
-          <option value="today">Today</option>
-          <option value="tomorrow">Tomorrow</option>
-          <option value="nextweek">Next Week</option>
-          <option value="custom">{newDueOption === "custom" ? dateLabel(newDue) : "Custom"}</option>
-        </select>
+          value={newDue || undefined}
+          onChange={handleNewDueChange}
+        />
 
         <select value={newPriority} onChange={(e) => setNewPriority(Number(eventValue(e)) as Priority)}>
           <option value={1}>P1</option>
@@ -1010,7 +1197,7 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
           <option value={4}>P4</option>
         </select>
 
-        <button onClick={addTask}>Add</button>
+        <button className="todoapp-add-submit" onClick={addTask}>Add</button>
       </div>
 
       <div className="todoapp-list">
@@ -1084,16 +1271,15 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
                         )}
 
                         {isEditingDue ? (
-                          <input
-                            autoFocus
-                            className="todoapp-inline-date"
-                            type="date"
-                            value={task.due || ""}
-                            onBlur={stopInline}
-                            onChange={(e) => {
-                              patchTask(task.id, { due: eventValue(e) || undefined });
+                          <DueDropdown
+                            className="todoapp-inline-due"
+                            initialOpen
+                            value={task.due}
+                            onChange={(iso) => {
+                              patchTask(task.id, { due: iso });
                               stopInline();
                             }}
+                            onCloseWithoutChange={stopInline}
                           />
                         ) : (
                           <button
