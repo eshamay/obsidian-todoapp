@@ -54,14 +54,14 @@ const DATA_DIR = ".todoapp";
 const NOTE_DIR = "TodoApp Notes";
 
 const PROJECT_COLORS = [
-  "#e44332",
-  "#f39c12",
-  "#2d9cdb",
-  "#27ae60",
-  "#9b59b6",
-  "#e67e22",
-  "#16a085",
-  "#d35400"
+  "#b8255f",
+  "#db4035",
+  "#ff9933",
+  "#fad000",
+  "#afb83b",
+  "#7ecc49",
+  "#299438",
+  "#6accbc"
 ];
 
 function eventValue(e: Event) {
@@ -605,7 +605,7 @@ class TodoStore {
       prioritySortDir: "asc",
       projects: [
         { id: "inbox", name: "Inbox", color: "#808080" },
-        { id: "todo", name: "Todo", color: "#e44332" }
+        { id: "todo", name: "Todo", color: "#ff9933" }
       ],
       tasks: []
     };
@@ -1334,7 +1334,7 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
                     key={task.id}
                   >
                     <input
-                      className="todoapp-checkbox"
+                      className={`todoapp-checkbox priority-${task.priority}`}
                       type="checkbox"
                       checked={task.completed}
                       onChange={(e) => patchTask(task.id, { completed: eventChecked(e) })}

@@ -68,8 +68,8 @@
 .todoapp-projects > button.is-active,
 .todoapp-time-tabs button.is-active,
 .todoapp-project-pill.is-active .todoapp-project-main {
-  background: rgba(228, 67, 50, 0.10);
-  color: #e44332;
+  background: rgba(220, 76, 62, 0.10);
+  color: #dc4c3e;
   font-weight: 600;
 }
 
@@ -81,11 +81,11 @@
 }
 
 .todoapp-project-pill.has-today .todoapp-project-main {
-  color: #f39c12;
+  color: #058527;
 }
 
 .todoapp-project-pill.has-priority-today .todoapp-project-main {
-  color: #e44332;
+  color: #d1453b;
   font-weight: 700;
 }
 
@@ -183,7 +183,7 @@
   font-size: 12px;
   border: 0;
   border-radius: 6px;
-  background: #e44332;
+  background: #dc4c3e;
   color: white;
   cursor: pointer;
   box-shadow: none;
@@ -220,15 +220,15 @@
 }
 
 .todoapp-task.priority-1 {
-  border-left-color: #e44332;
+  border-left-color: #d1453b;
 }
 
 .todoapp-task.priority-2 {
-  border-left-color: #f39c12;
+  border-left-color: #eb8909;
 }
 
 .todoapp-task.priority-3 {
-  border-left-color: #2d9cdb;
+  border-left-color: #246fe0;
 }
 
 .todoapp-task.priority-4 {
@@ -246,6 +246,79 @@
 .todoapp-checkbox {
   margin: 3px 0 0 0;
   flex: 0 0 auto;
+}
+
+/*
+ * Obsidian's core CSS has a global `input[type=checkbox]` rule (specificity
+ * 0,1,1) that beats a plain `.todoapp-checkbox` class selector (0,1,0) and
+ * forces its own square-radius checkbox + checkmark mask-image on :checked.
+ * `input[type="checkbox"].todoapp-checkbox` (0,2,1) outranks it so our circle
+ * styling actually wins the cascade instead of silently losing to core CSS.
+ */
+input[type="checkbox"].todoapp-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-faint);
+  background: transparent;
+  cursor: pointer;
+  box-shadow: none;
+  position: relative;
+}
+
+input[type="checkbox"].todoapp-checkbox:hover {
+  border-color: var(--text-muted);
+}
+
+input[type="checkbox"].todoapp-checkbox.priority-1 {
+  border-color: #d1453b;
+}
+
+input[type="checkbox"].todoapp-checkbox.priority-1:checked {
+  background: #d1453b;
+  border-color: #d1453b;
+}
+
+input[type="checkbox"].todoapp-checkbox.priority-2 {
+  border-color: #eb8909;
+}
+
+input[type="checkbox"].todoapp-checkbox.priority-2:checked {
+  background: #eb8909;
+  border-color: #eb8909;
+}
+
+input[type="checkbox"].todoapp-checkbox.priority-3 {
+  border-color: #246fe0;
+}
+
+input[type="checkbox"].todoapp-checkbox.priority-3:checked {
+  background: #246fe0;
+  border-color: #246fe0;
+}
+
+input[type="checkbox"].todoapp-checkbox.priority-4 {
+  border-color: var(--text-faint);
+}
+
+input[type="checkbox"].todoapp-checkbox.priority-4:checked {
+  background: var(--text-faint);
+  border-color: var(--text-faint);
+}
+
+input[type="checkbox"].todoapp-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: white;
+  -webkit-mask-image: none;
+  transform: translate(-50%, -50%);
 }
 
 .todoapp-task-main {
@@ -308,30 +381,30 @@
 }
 
 .todoapp-date-link.is-today {
-  color: #e44332;
+  color: #058527;
   font-weight: 700;
 }
 
 .todoapp-date-link.is-tomorrow {
-  color: #f39c12;
+  color: #eb8600;
   font-weight: 700;
 }
 
 .todoapp-priority-link.priority-1,
 .todoapp-inline-priority.priority-1 {
-  color: #e44332;
+  color: #d1453b;
   font-weight: 700;
 }
 
 .todoapp-priority-link.priority-2,
 .todoapp-inline-priority.priority-2 {
-  color: #f39c12;
+  color: #eb8909;
   font-weight: 700;
 }
 
 .todoapp-priority-link.priority-3,
 .todoapp-inline-priority.priority-3 {
-  color: #2d9cdb;
+  color: #246fe0;
 }
 
 .todoapp-order-link {
@@ -504,12 +577,12 @@
 }
 
 .todoapp-due-cal-day.is-today {
-  border: 1px solid var(--interactive-accent);
+  border: 1px solid #058527;
 }
 
 .todoapp-due-cal-day.is-selected {
-  background: var(--interactive-accent);
-  color: var(--text-on-accent);
+  background: #dc4c3e;
+  color: white;
 }
 
 .todoapp-due-cal-cell-blank {
@@ -542,7 +615,7 @@
 }
 
 .todoapp-delete:hover {
-  color: #e44332;
+  color: #dc4c3e;
 }
 
 .todoapp-empty,
@@ -633,7 +706,7 @@
 }
 
 .todoapp-delete:hover {
-  color: #e44332;
+  color: #dc4c3e;
 }
 
 .todoapp-order-link {
@@ -698,7 +771,7 @@
 }
 
 .todoapp-date-link.is-overdue {
-  color: #e44332;
+  color: #d1453b;
   font-weight: 700;
 }
 
@@ -737,11 +810,6 @@
   font-weight: 400;
 }
 
-.todoapp-count.is-today-count {
-  color: #9acd32;
-  font-weight: 800;
-}
-
 .todoapp-note.has-note {
   font-weight: 800;
   color: var(--text-normal);
@@ -757,12 +825,6 @@
   line-height: 1;
   opacity: 0.72;
   vertical-align: super;
-}
-
-.todoapp-count.is-today-count {
-  color: #9acd32;
-  font-weight: 800;
-  opacity: 1;
 }
 
 .todoapp-time-tabs button span {
@@ -838,7 +900,7 @@
 }
 
 .todoapp-note-modal-save {
-  background: #e44332;
+  background: #dc4c3e;
   color: white;
 }
 
@@ -885,29 +947,29 @@
 }
 
 .todoapp-count.is-today-count {
-  color: #e44332;
+  color: #058527;
   font-weight: 400;
 }
 
 .todoapp-count.is-tomorrow-count {
-  color: #f39c12;
+  color: #eb8600;
   font-weight: 400;
 }
 
 .todoapp-date-separator.is-today {
-  color: #e44332;
+  color: #058527;
 }
 
 .todoapp-date-separator.is-today::after {
-  background: rgba(228, 67, 50, 0.35);
+  background: rgba(5, 133, 39, 0.35);
 }
 
 .todoapp-date-separator.is-tomorrow {
-  color: #f39c12;
+  color: #eb8600;
 }
 
 .todoapp-date-separator.is-tomorrow::after {
-  background: rgba(243, 156, 18, 0.35);
+  background: rgba(235, 134, 0, 0.35);
 }
 
 .todoapp-date-link.is-today,
