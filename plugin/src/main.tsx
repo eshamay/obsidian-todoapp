@@ -67,13 +67,14 @@ function eventChecked(e: Event) {
 }
 
 function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  return partsToIso(d.getFullYear(), d.getMonth() + 1, d.getDate());
 }
 
 function addDaysIso(days: number) {
   const d = new Date();
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return partsToIso(d.getFullYear(), d.getMonth() + 1, d.getDate());
 }
 
 function tomorrowIso() {
@@ -81,10 +82,9 @@ function tomorrowIso() {
 }
 
 function nextWeekMondayIso() {
-  const now = new Date();
-  const isoDow = now.getDay() === 0 ? 7 : now.getDay();
-  let days = (8 - isoDow) % 7;
-  if (days === 0) days = 7;
+  const dow = new Date().getDay(); // 0=Sun..6=Sat
+  let days = ((7 - dow) % 7) + 1; // the very next Monday, 1-7 days out
+  if (days === 1) days += 7; // that Monday is tomorrow — use the following Monday instead
   return addDaysIso(days);
 }
 
