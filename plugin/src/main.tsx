@@ -13,8 +13,10 @@ import { render } from "preact";
 import { createPortal } from "preact/compat";
 
 type Priority = 1 | 2 | 3 | 4;
-type TimeFilter = "today" | "tomorrow" | "week" | "all";
+type TimeFilter = "today" | "tomorrow" | "week" | "nodate" | "all";
 type InlineField = "project" | "due" | "priority" | null;
+type SortField = "date" | "priority";
+type SortDir = "asc" | "desc";
 
 type Project = {
   id: string;
@@ -40,6 +42,10 @@ type TodoAppData = {
   id: string;
   displayTitle: string;
   displaySubtitle?: string;
+  showCompleted: boolean;
+  sortField: SortField;
+  dateSortDir: SortDir;
+  prioritySortDir: SortDir;
   projects: Project[];
   tasks: Task[];
 };
@@ -135,6 +141,7 @@ function timeFilterLabel(filter: TimeFilter) {
   if (filter === "today") return "Today";
   if (filter === "tomorrow") return "Tomorrow";
   if (filter === "week") return "Week";
+  if (filter === "nodate") return "No Date";
   return "All";
 }
 
@@ -592,11 +599,13 @@ class TodoStore {
       id,
       displayTitle: "TodoApp",
       displaySubtitle: id,
+      showCompleted: false,
+      sortField: "date",
+      dateSortDir: "asc",
+      prioritySortDir: "asc",
       projects: [
         { id: "inbox", name: "Inbox", color: "#808080" },
-        { id: "work", name: "Work", color: "#e44332" },
-        { id: "personal", name: "Personal", color: "#2d9cdb" },
-        { id: "health", name: "Health", color: "#27ae60" }
+        { id: "todo", name: "Todo", color: "#e44332" }
       ],
       tasks: []
     };
@@ -633,6 +642,10 @@ class TodoStore {
       id: String(data.id || id),
       displayTitle: String(data.displayTitle || "TodoApp"),
       displaySubtitle: String(data.displaySubtitle || id),
+      showCompleted: typeof data.showCompleted === "boolean" ? data.showCompleted : false,
+      sortField: data.sortField === "priority" ? "priority" : "date",
+      dateSortDir: data.dateSortDir === "desc" ? "desc" : "asc",
+      prioritySortDir: data.prioritySortDir === "desc" ? "desc" : "asc",
       projects,
       tasks
     };
@@ -758,6 +771,34 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
     await store.save(appId, next);
   }
 
+  async function setShowCompleted(next: boolean) {
+    if (!data) return;
+    await update({ ...data, showCompleted: next });
+  }
+
+  async function setSortField(next: SortField) {
+    if (!data) return;
+    await update({ ...data, sortField: next });
+  }
+
+  async function toggleDateSortDir() {
+    if (!data) return;
+    await update({
+      ...data,
+      sortField: "date",
+      dateSortDir: data.dateSortDir === "asc" ? "desc" : "asc"
+    });
+  }
+
+  async function togglePrioritySortDir() {
+    if (!data) return;
+    await update({
+      ...data,
+      sortField: "priority",
+      prioritySortDir: data.prioritySortDir === "asc" ? "desc" : "asc"
+    });
+  }
+
   function activeProjectForAdd() {
     return projectFilter !== "all" ? projectFilter : newProjectId;
   }
@@ -815,18 +856,43 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
     if (filter === "today") return task.due === today;
     if (filter === "tomorrow") return task.due === tomorrow;
     if (filter === "week") return !!task.due && task.due >= today && task.due <= week;
+    if (filter === "nodate") return !task.due;
     return true;
+  }
+
+  function matchesCompleted(task: Task) {
+    return !!data?.showCompleted || !task.completed;
   }
 
   const visibleTasks = useMemo(() => {
     if (!data) return [];
 
+    const sortField = data.sortField;
+    const dateSortDir = data.dateSortDir;
+    const prioritySortDir = data.prioritySortDir;
+
     return data.tasks
-      .filter((t) => matchesProject(t) && matchesTime(t))
+      .filter((t) => matchesProject(t) && matchesTime(t) && matchesCompleted(t))
       .sort((a, b) => {
+        if (sortField === "priority") {
+          if (a.priority !== b.priority) {
+            const diff = a.priority - b.priority;
+            return prioritySortDir === "asc" ? diff : -diff;
+          }
+
+          const aDate = a.due || "9999-99-99";
+          const bDate = b.due || "9999-99-99";
+          if (aDate !== bDate) return aDate.localeCompare(bDate);
+          if (a.completed !== b.completed) return Number(a.completed) - Number(b.completed);
+          return a.order - b.order;
+        }
+
         const aDate = a.due || "9999-99-99";
         const bDate = b.due || "9999-99-99";
-        if (aDate !== bDate) return aDate.localeCompare(bDate);
+        if (aDate !== bDate) {
+          const diff = aDate.localeCompare(bDate);
+          return dateSortDir === "asc" ? diff : -diff;
+        }
         if (a.completed !== b.completed) return Number(a.completed) - Number(b.completed);
         if (a.priority !== b.priority) return a.priority - b.priority;
         return a.order - b.order;
@@ -834,7 +900,7 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
   }, [data, projectFilter, timeFilter]);
 
   const timeCounts = useMemo(() => {
-    if (!data) return { today: 0, tomorrow: 0, week: 0, all: 0 };
+    if (!data) return { today: 0, tomorrow: 0, week: 0, nodate: 0, all: 0 };
 
     const active = data.tasks.filter((t) => !t.completed && matchesProject(t));
 
@@ -842,6 +908,7 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
       today: active.filter((t) => matchesTime(t, "today")).length,
       tomorrow: active.filter((t) => matchesTime(t, "tomorrow")).length,
       week: active.filter((t) => matchesTime(t, "week")).length,
+      nodate: active.filter((t) => matchesTime(t, "nodate")).length,
       all: active.length
     };
   }, [data, projectFilter]);
@@ -875,6 +942,10 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
   }, [data]);
 
   const groupedTasks = useMemo(() => {
+    if (data?.sortField === "priority") {
+      return [["__flat__", visibleTasks]] as [string, Task[]][];
+    }
+
     const groups = new Map<string, Task[]>();
 
     for (const task of visibleTasks) {
@@ -882,12 +953,15 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
       groups.set(key, [...(groups.get(key) || []), task]);
     }
 
+    const dateSortDir = data?.dateSortDir || "asc";
+
     return Array.from(groups.entries()).sort(([a], [b]) => {
       const aa = a === "__no_date__" ? "9999-99-99" : a;
       const bb = b === "__no_date__" ? "9999-99-99" : b;
-      return aa.localeCompare(bb);
+      const diff = aa.localeCompare(bb);
+      return dateSortDir === "asc" ? diff : -diff;
     });
-  }, [visibleTasks]);
+  }, [visibleTasks, data?.sortField, data?.dateSortDir]);
 
   async function moveTask(taskId: string, dir: -1 | 1) {
     if (!data) return;
@@ -1156,7 +1230,7 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
       </div>
 
       <div className="todoapp-time-tabs">
-        {(["all", "today", "tomorrow", "week"] as TimeFilter[]).map((filter) => (
+        {(["all", "today", "tomorrow", "week", "nodate"] as TimeFilter[]).map((filter) => (
           <button
             key={filter}
             className={timeFilter === filter ? "is-active" : ""}
@@ -1166,6 +1240,33 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
             <span>{timeCounts[filter]}</span>
           </button>
         ))}
+
+        <button
+          className={data.showCompleted ? "todoapp-show-completed is-active" : "todoapp-show-completed"}
+          onClick={() => setShowCompleted(!data.showCompleted)}
+        >
+          {data.showCompleted ? "Hide Completed" : "Show Completed"}
+        </button>
+
+        <button
+          className={data.sortField === "date" ? "todoapp-sort-field is-active" : "todoapp-sort-field"}
+          onClick={() => setSortField("date")}
+        >
+          Date
+        </button>
+        <button className="todoapp-order-link" onClick={toggleDateSortDir}>
+          {data.dateSortDir === "asc" ? "↑" : "↓"}
+        </button>
+
+        <button
+          className={data.sortField === "priority" ? "todoapp-sort-field is-active" : "todoapp-sort-field"}
+          onClick={() => setSortField("priority")}
+        >
+          Priority
+        </button>
+        <button className="todoapp-order-link" onClick={togglePrioritySortDir}>
+          {data.prioritySortDir === "asc" ? "↑" : "↓"}
+        </button>
       </div>
 
       <div className="todoapp-add">
@@ -1206,15 +1307,17 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
         ) : (
           groupedTasks.map(([date, tasks]) => (
             <div className="todoapp-date-group" key={date}>
-              <div
-                className={[
-                  "todoapp-date-separator",
-                  date !== "__no_date__" && date <= todayIso() ? "is-today" : "",
-                  date === tomorrowIso() ? "is-tomorrow" : ""
-                ].join(" ")}
-              >
-                <span>{dateLabel(date === "__no_date__" ? undefined : date)}</span>
-              </div>
+              {date !== "__flat__" && (
+                <div
+                  className={[
+                    "todoapp-date-separator",
+                    date !== "__no_date__" && date <= todayIso() ? "is-today" : "",
+                    date === tomorrowIso() ? "is-tomorrow" : ""
+                  ].join(" ")}
+                >
+                  <span>{dateLabel(date === "__no_date__" ? undefined : date)}</span>
+                </div>
+              )}
 
               {tasks.map((task) => {
                 const isEditingProject = editingTask === task.id && editingField === "project";
