@@ -41,4 +41,4 @@ Personal repo, for tracking this Obsidian plugin fork: `git@github.com:eshamay/o
 
 - No PR ever planned back to upstream (kaiso12/todoapp) — free to diverge fully, no compat constraint.
 - Commit only when explicitly asked.
-- Push only when explicitly asked.
+- Push to remote after every commit.
