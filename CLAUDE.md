@@ -33,8 +33,12 @@ Test loop:
 3. In Obsidian (vault open): reload the app, or disable/re-enable the TodoApp Blocks plugin, to pick up the new `main.js`.
 4. Test in the vault directly — existing "life" project/tasks are real data, not throwaway fixtures.
 
+## Remote
+
+Personal repo, for tracking this Obsidian plugin fork: `git@github.com:eshamay/obsidian-todoapp.git` (remote `origin`, branch `main`).
+
 ## Conventions
 
-- No remote configured — local-only repo by design.
 - No PR ever planned back to upstream (kaiso12/todoapp) — free to diverge fully, no compat constraint.
 - Commit only when explicitly asked.
+- Push only when explicitly asked.
