@@ -1215,15 +1215,32 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
         <span className="todoapp-id">id: {appId}</span>
       </div>
 
-      <div className="todoapp-projects">
-        <button
-          className={projectFilter === "all" ? "is-active" : ""}
-          onClick={() => setProjectFilter("all")}
-        >
-          All
-        </button>
+      <div className="todoapp-body">
+        <div className="todoapp-sidebar">
+          <div className="todoapp-sidebar-filters">
+            {(["all", "today", "tomorrow", "week", "nodate"] as TimeFilter[]).map((filter) => (
+              <button
+                key={filter}
+                className={timeFilter === filter ? "is-active" : ""}
+                onClick={() => setTimeFilter(filter)}
+              >
+                {timeFilterLabel(filter)}
+                <span>{timeCounts[filter]}</span>
+              </button>
+            ))}
+          </div>
 
-        {sortedProjects.map((p) => {
+          <div className="todoapp-sidebar-divider" />
+
+          <div className="todoapp-projects">
+            <button
+              className={projectFilter === "all" ? "is-active" : ""}
+              onClick={() => setProjectFilter("all")}
+            >
+              All
+            </button>
+
+            {sortedProjects.map((p) => {
           const stats = projectStats(p.id);
 
           return (
@@ -1290,58 +1307,49 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
           );
         })}
 
-        <input
-          className="todoapp-add-project-input"
-          value={newProjectName}
-          placeholder="+ project"
-          onChange={(e) => setNewProjectName(eventValue(e))}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") addProject();
-          }}
-        />
-      </div>
+            <input
+              className="todoapp-add-project-input"
+              value={newProjectName}
+              placeholder="+ project"
+              onChange={(e) => setNewProjectName(eventValue(e))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") addProject();
+              }}
+            />
+          </div>
+        </div>
 
-      <div className="todoapp-time-tabs">
-        {(["all", "today", "tomorrow", "week", "nodate"] as TimeFilter[]).map((filter) => (
-          <button
-            key={filter}
-            className={timeFilter === filter ? "is-active" : ""}
-            onClick={() => setTimeFilter(filter)}
-          >
-            {timeFilterLabel(filter)}
-            <span>{timeCounts[filter]}</span>
-          </button>
-        ))}
+        <div className="todoapp-main">
+          <div className="todoapp-toolbar">
+            <button
+              className={data.showCompleted ? "todoapp-show-completed is-active" : "todoapp-show-completed"}
+              onClick={() => setShowCompleted(!data.showCompleted)}
+            >
+              {data.showCompleted ? "Hide Completed" : "Show Completed"}
+            </button>
 
-        <button
-          className={data.showCompleted ? "todoapp-show-completed is-active" : "todoapp-show-completed"}
-          onClick={() => setShowCompleted(!data.showCompleted)}
-        >
-          {data.showCompleted ? "Hide Completed" : "Show Completed"}
-        </button>
+            <button
+              className={data.sortField === "date" ? "todoapp-sort-field is-active" : "todoapp-sort-field"}
+              onClick={() => setSortField("date")}
+            >
+              Date
+            </button>
+            <button className="todoapp-order-link" onClick={toggleDateSortDir}>
+              {data.dateSortDir === "asc" ? "↑" : "↓"}
+            </button>
 
-        <button
-          className={data.sortField === "date" ? "todoapp-sort-field is-active" : "todoapp-sort-field"}
-          onClick={() => setSortField("date")}
-        >
-          Date
-        </button>
-        <button className="todoapp-order-link" onClick={toggleDateSortDir}>
-          {data.dateSortDir === "asc" ? "↑" : "↓"}
-        </button>
+            <button
+              className={data.sortField === "priority" ? "todoapp-sort-field is-active" : "todoapp-sort-field"}
+              onClick={() => setSortField("priority")}
+            >
+              Priority
+            </button>
+            <button className="todoapp-order-link" onClick={togglePrioritySortDir}>
+              {data.prioritySortDir === "asc" ? "↑" : "↓"}
+            </button>
+          </div>
 
-        <button
-          className={data.sortField === "priority" ? "todoapp-sort-field is-active" : "todoapp-sort-field"}
-          onClick={() => setSortField("priority")}
-        >
-          Priority
-        </button>
-        <button className="todoapp-order-link" onClick={togglePrioritySortDir}>
-          {data.prioritySortDir === "asc" ? "↑" : "↓"}
-        </button>
-      </div>
-
-      <div className="todoapp-add">
+          <div className="todoapp-add">
         <input
           value={newTitle}
           placeholder={`Add task to ${projectName(activeProjectForAdd())}...`}
@@ -1516,6 +1524,8 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
             </div>
           ))
         )}
+          </div>
+        </div>
       </div>
     </div>
   );

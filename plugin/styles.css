@@ -4,6 +4,9 @@
   background: var(--background-primary);
   overflow: visible;
   font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  max-height: 480px;
 }
 
 .todoapp button,
@@ -36,37 +39,82 @@
   font-size: 11px;
 }
 
-.todoapp-projects {
+.todoapp-body {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--background-modifier-border);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
+.todoapp-sidebar {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border-right: 1px solid var(--background-modifier-border);
+  padding: 8px;
+}
+
+.todoapp-sidebar-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.todoapp-sidebar-divider {
+  height: 1px;
+  background: var(--background-modifier-border);
+  margin: 8px 0;
+  flex-shrink: 0;
+}
+
+.todoapp-projects {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+
+.todoapp-sidebar-filters > button,
 .todoapp-projects > button,
-.todoapp-time-tabs button,
+.todoapp-toolbar button,
 .todoapp-project-main {
   border: 0;
   background: transparent;
   color: var(--text-muted);
-  border-radius: 999px;
+  border-radius: 6px;
   padding: 3px 7px;
   cursor: pointer;
   font-size: 12px;
   box-shadow: none;
+  text-align: left;
+  width: 100%;
 }
 
+.todoapp-sidebar-filters > button,
+.todoapp-projects > button,
+.todoapp-project-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.todoapp-project-main {
+  color: var(--text-normal);
+}
+
+.todoapp-sidebar-filters > button:hover,
 .todoapp-projects > button:hover,
-.todoapp-time-tabs button:hover,
+.todoapp-toolbar button:hover,
 .todoapp-project-main:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
+.todoapp-sidebar-filters > button.is-active,
 .todoapp-projects > button.is-active,
-.todoapp-time-tabs button.is-active,
+.todoapp-toolbar button.is-active,
 .todoapp-project-pill.is-active .todoapp-project-main {
   background: rgba(220, 76, 62, 0.10);
   color: #dc4c3e;
@@ -77,15 +125,11 @@
   display: flex;
   align-items: center;
   gap: 3px;
-  border-radius: 999px;
-}
-
-.todoapp-project-pill.has-today .todoapp-project-main {
-  color: #058527;
+  width: 100%;
+  border-radius: 6px;
 }
 
 .todoapp-project-pill.has-priority-today .todoapp-project-main {
-  color: #d1453b;
   font-weight: 700;
 }
 
@@ -141,14 +185,27 @@
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.todoapp-time-tabs {
+.todoapp-main {
+  flex: 1;
   display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.todoapp-toolbar {
+  display: flex;
+  flex-shrink: 0;
   gap: 5px;
   padding: 7px 10px;
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.todoapp-time-tabs button span {
+.todoapp-toolbar button {
+  width: auto;
+}
+
+.todoapp-sidebar-filters button span {
   margin-left: 5px;
   color: var(--text-faint);
   font-size: 10px;
@@ -156,6 +213,7 @@
 
 .todoapp-add {
   display: grid;
+  flex-shrink: 0;
   grid-template-columns: 1fr 110px 128px 62px 56px;
   gap: 5px;
   padding: 8px 10px;
@@ -190,6 +248,9 @@
 }
 
 .todoapp-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   padding: 2px 8px 10px;
 }
 
