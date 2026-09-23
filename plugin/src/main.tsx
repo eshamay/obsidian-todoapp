@@ -7,7 +7,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable obsidianmd/prefer-window-timers */
 
-import { App, MarkdownView, Modal, Plugin, TFile, WorkspaceLeaf } from "obsidian";
+import { App, MarkdownView, Modal, Plugin, TFile, WorkspaceLeaf, getFrontMatterInfo, parseYaml } from "obsidian";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "preact/hooks";
 import { render } from "preact";
 import { createPortal } from "preact/compat";
@@ -150,7 +150,8 @@ function stripTodoAppNoteMeta(raw: string) {
   let text = raw;
 
   // New format: YAML frontmatter is metadata, user content follows.
-  text = text.replace(/^---[\s\S]*?---\s*/, "");
+  const frontMatterInfo = getFrontMatterInfo(text);
+  text = frontMatterInfo.exists ? text.slice(frontMatterInfo.contentStart) : text;
 
   // Old format cleanup from previous versions.
   text = text.replace(/^# .*\n+/, "");
@@ -174,6 +175,29 @@ function makeNoteFileContent(task: Task, projectName: string, body: string) {
   ].join("\n");
 }
 
+const TODOAPP_FRONTMATTER_KEYS = new Set([
+  "todoapp_task_id",
+  "todoapp_task_title",
+  "todoapp_project",
+  "todoapp_priority",
+  "todoapp_due"
+]);
+
+// Mutates `frontmatter` in place for app.fileManager.processFrontMatter().
+// Only ever sets the plugin's own keys — never deletes anything, so any
+// foreign key already on the object survives untouched.
+function applyTodoAppFrontMatter(
+  frontmatter: Record<string, unknown>,
+  task: Task,
+  projectName: string
+) {
+  frontmatter.todoapp_task_id = task.id;
+  frontmatter.todoapp_task_title = task.title;
+  frontmatter.todoapp_project = projectName;
+  frontmatter.todoapp_priority = `P${task.priority}`;
+  frontmatter.todoapp_due = task.due || "";
+}
+
 // WorkspaceLeaf's own tab-wrapper element isn't part of the public obsidian.d.ts
 // API (unlike leaf.view.containerEl). Isolated here so the one undocumented
 // access is a single auditable spot if a future Obsidian release removes it.
@@ -185,6 +209,7 @@ class TaskNoteModal extends Modal {
   private textarea?: HTMLTextAreaElement;
   private leaf?: WorkspaceLeaf;
   private prevActiveLeaf?: WorkspaceLeaf | null;
+  private saving = false;
 
   constructor(
     app: App,
@@ -297,11 +322,58 @@ class TaskNoteModal extends Modal {
   }
 
   async save() {
-    if (!this.textarea) return;
-    await this.app.vault.adapter.write(
-      this.notePath,
-      makeNoteFileContent(this.task, this.projectName, this.textarea.value)
-    );
+    if (!this.textarea || this.saving) return;
+    this.saving = true;
+    try {
+      const body = this.textarea.value.trimStart();
+      const file = this.app.vault.getAbstractFileByPath(this.notePath);
+
+      let hasForeignKeys = false;
+      if (file instanceof TFile) {
+        const raw = await this.app.vault.adapter.read(this.notePath);
+        const info = getFrontMatterInfo(raw);
+        if (info.exists) {
+          try {
+            const existing = parseYaml(info.frontmatter) ?? {};
+            hasForeignKeys = Object.keys(existing).some(
+              (k) => !TODOAPP_FRONTMATTER_KEYS.has(k)
+            );
+          } catch {
+            // Malformed existing frontmatter — nothing well-defined to
+            // preserve; fall through to the deterministic full rewrite below,
+            // same as today's behavior.
+            hasForeignKeys = false;
+          }
+        }
+      }
+
+      if (!(file instanceof TFile) || !hasForeignKeys) {
+        // Note doesn't exist yet, no frontmatter, or only todoapp_* keys.
+        // Identical to pre-fix behavior.
+        await this.app.vault.adapter.write(
+          this.notePath,
+          makeNoteFileContent(this.task, this.projectName, body)
+        );
+        return;
+      }
+
+      // Foreign frontmatter keys exist — merge ours in place, then splice
+      // the new body in after the (possibly reformatted) frontmatter block.
+      await this.app.fileManager.processFrontMatter(file, (frontmatter) =>
+        applyTodoAppFrontMatter(frontmatter, this.task, this.projectName)
+      );
+
+      const updated = await this.app.vault.adapter.read(this.notePath);
+      const updatedInfo = getFrontMatterInfo(updated);
+      await this.app.vault.adapter.write(
+        this.notePath,
+        updatedInfo.exists
+          ? updated.slice(0, updatedInfo.contentStart) + body
+          : makeNoteFileContent(this.task, this.projectName, body)
+      );
+    } finally {
+      this.saving = false;
+    }
   }
 
   async onClose() {
