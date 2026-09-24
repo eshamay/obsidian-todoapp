@@ -421,6 +421,7 @@ input[type="checkbox"].todoapp-checkbox:checked::after {
 .todoapp-priority-link,
 .todoapp-order-link,
 .todoapp-note,
+.todoapp-ingest,
 .todoapp-delete {
   border: 0;
   background: transparent;
@@ -720,6 +721,7 @@ input[type="checkbox"].todoapp-checkbox:checked::after {
 .todoapp .todoapp-priority-link,
 .todoapp .todoapp-order-link,
 .todoapp .todoapp-note,
+.todoapp .todoapp-ingest,
 .todoapp .todoapp-delete,
 .todoapp .todoapp-project-actions button {
   appearance: none;
@@ -735,6 +737,7 @@ input[type="checkbox"].todoapp-checkbox:checked::after {
 .todoapp .todoapp-priority-link:hover,
 .todoapp .todoapp-order-link:hover,
 .todoapp .todoapp-note:hover,
+.todoapp .todoapp-ingest:not(:disabled):hover,
 .todoapp .todoapp-delete:hover,
 .todoapp .todoapp-project-actions button:hover {
   background: transparent;
@@ -874,6 +877,33 @@ input[type="checkbox"].todoapp-checkbox:checked::after {
 .todoapp-note.has-note {
   font-weight: 800;
   color: var(--text-normal);
+}
+
+.todoapp-ingest {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  opacity: 0.55;
+}
+
+.todoapp-ingest:not(:disabled):hover {
+  color: var(--text-normal);
+  opacity: 0.85;
+  background: var(--background-modifier-hover);
+}
+
+.todoapp-ingest.is-marked {
+  color: #058527;
+  opacity: 1;
+  background: rgba(5, 133, 39, 0.15);
+}
+
+.todoapp-ingest:disabled {
+  opacity: 0.25;
+  cursor: default;
 }
 
 

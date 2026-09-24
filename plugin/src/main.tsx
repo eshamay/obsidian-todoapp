@@ -30,6 +30,7 @@ type Task = {
   projectId: string;
   note?: string;
   notePath?: string;
+  markedForIngestion?: boolean;
   due?: string;
   priority: Priority;
   completed: boolean;
@@ -169,6 +170,7 @@ function makeNoteFileContent(task: Task, projectName: string, body: string) {
     `todoapp_project: ${JSON.stringify(projectName)}`,
     `todoapp_priority: P${task.priority}`,
     `todoapp_due: ${task.due || ""}`,
+    `todoapp_ingest: ${task.markedForIngestion ? "true" : "false"}`,
     "---",
     "",
     body.trimStart()
@@ -180,7 +182,8 @@ const TODOAPP_FRONTMATTER_KEYS = new Set([
   "todoapp_task_title",
   "todoapp_project",
   "todoapp_priority",
-  "todoapp_due"
+  "todoapp_due",
+  "todoapp_ingest"
 ]);
 
 // Mutates `frontmatter` in place for app.fileManager.processFrontMatter().
@@ -196,6 +199,7 @@ function applyTodoAppFrontMatter(
   frontmatter.todoapp_project = projectName;
   frontmatter.todoapp_priority = `P${task.priority}`;
   frontmatter.todoapp_due = task.due || "";
+  frontmatter.todoapp_ingest = !!task.markedForIngestion;
 }
 
 // WorkspaceLeaf's own tab-wrapper element isn't part of the public obsidian.d.ts
@@ -701,6 +705,7 @@ class TodoStore {
           projectId: String(t.projectId || "inbox"),
           note: t.note ? String(t.note) : undefined,
           notePath: t.notePath ? String(t.notePath) : undefined,
+          markedForIngestion: Boolean(t.markedForIngestion),
           due: t.due ? String(t.due) : undefined,
           priority: ([1, 2, 3, 4].includes(Number(t.priority)) ? Number(t.priority) : 4) as Priority,
           completed: Boolean(t.completed),
@@ -771,6 +776,30 @@ class TodoStore {
     return next;
   }
 
+  async toggleTaskIngestion(appId: string, task: Task, data: TodoAppData, marked: boolean): Promise<TodoAppData> {
+    const next: TodoAppData = {
+      ...data,
+      tasks: data.tasks.map((t) =>
+        t.id === task.id ? { ...t, markedForIngestion: marked, updatedAt: new Date().toISOString() } : t
+      )
+    };
+
+    await this.save(appId, next);
+
+    if (task.notePath) {
+      const file = this.app.vault.getAbstractFileByPath(task.notePath);
+      if (file instanceof TFile) {
+        const projectName = data.projects.find((p) => p.id === task.projectId)?.name || "Inbox";
+        const updatedTask = next.tasks.find((t) => t.id === task.id)!;
+        await this.app.fileManager.processFrontMatter(file, (fm) =>
+          applyTodoAppFrontMatter(fm, updatedTask, projectName)
+        );
+      }
+    }
+
+    return next;
+  }
+
   async deleteTaskNote(path: string) {
     if (await this.app.vault.adapter.exists(path)) {
       await this.app.vault.adapter.remove(path);
@@ -837,6 +866,31 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
       alive = false;
     };
   }, [appId, store]);
+
+  const [, bumpMetadataTick] = useState(0);
+
+  useEffect(() => {
+    const handler = () => bumpMetadataTick((t) => t + 1);
+    store.app.metadataCache.on("changed", handler);
+
+    return () => {
+      store.app.metadataCache.off("changed", handler);
+    };
+  }, [store]);
+
+  // Frontmatter is the live source of truth for the ingest flag whenever a note
+  // exists, so editing/removing `todoapp_ingest` by hand stays in sync with the
+  // button. `task.markedForIngestion` is only a fallback for the brief window
+  // right after a write, before Obsidian's metadata cache catches up.
+  function isMarkedForIngestion(task: Task): boolean {
+    if (!task.notePath) return false;
+
+    const file = store.app.vault.getAbstractFileByPath(task.notePath);
+    const frontmatter = file instanceof TFile ? store.app.metadataCache.getFileCache(file)?.frontmatter : undefined;
+    const flag = frontmatter?.todoapp_ingest;
+
+    return typeof flag === "boolean" ? flag : !!task.markedForIngestion;
+  }
 
   async function update(next: TodoAppData) {
     setData(next);
@@ -1095,6 +1149,19 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
       ).open();
     } catch (e) {
       console.error("[todoapp] failed to open note", e);
+      window.alert(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  async function toggleIngestion(task: Task) {
+    if (!data || !task.notePath) return;
+
+    try {
+      const nextMarked = !isMarkedForIngestion(task);
+      const next = await store.toggleTaskIngestion(appId, task, data, nextMarked);
+      setData(next);
+    } catch (e) {
+      console.error("[todoapp] failed to toggle ingestion flag", e);
       window.alert(e instanceof Error ? e.message : String(e));
     }
   }
@@ -1515,6 +1582,20 @@ function TodoWidget(props: { store: TodoStore; appId: string }) {
                         onClick={() => openNote(task)}
                       >
                         {task.notePath ? "✎ Note" : "+ Note"}
+                      </button>
+                      <button
+                        className={isMarkedForIngestion(task) ? "todoapp-ingest is-marked" : "todoapp-ingest"}
+                        title={
+                          !task.notePath
+                            ? "Create a note first"
+                            : isMarkedForIngestion(task)
+                              ? "Unmark for ingestion"
+                              : "Mark for ingestion"
+                        }
+                        disabled={!task.notePath}
+                        onClick={() => toggleIngestion(task)}
+                      >
+                        📥
                       </button>
                       <button className="todoapp-delete" onClick={() => deleteTask(task)}>×</button>
                     </div>
